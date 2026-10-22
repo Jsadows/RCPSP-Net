@@ -1,0 +1,26 @@
+[project]
+name = "rcpsp-net"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Jsadows", email = "j.sadowski09@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "pandas>=3.1.0",
+    "psplib>=0.4.0",
+    "torch==2.14.1+cu126",
+    "torch-geometric>=2.8.1",
+    "torchvision==0.29.1+cu126",
+]
+
+[project.scripts]
+rcpsp-net = "rcpsp_net:main"
+
+[[tool.uv.index]]
+url = "https://download.pytorch.org/whl/cu126"
+
+[build-system]
+requires = ["uv_build>=0.13.4,<0.14.0"]
+build-backend = "uv_build"
