@@ -11,7 +11,7 @@ class PSPLIBDataset(Dataset):
         super().__init__()
         df = pd.read_excel(excel_path_parameters_data, sheet_name=dataset)
         self.bks_mapping = dict(zip(df['FileName'], df['UB-lit']))
-        data = self.load_psplib_dataset()
+        data = self.load_psplib_dataset('PSPLIB')
         self.data = [self.convert_project_to_pyg_data(inst, fname)
                      for inst, fname in data]
 
@@ -57,16 +57,20 @@ class PSPLIBDataset(Dataset):
         data.bks = torch.tensor([bks_value], dtype=torch.float)
         return data
 
-    def load_psplib_dataset():
+    def load_psplib_dataset(data_name):
         all_projects = []
-        for root, _, files in os.walk("data/PSPLIB"):
+        for root, _, files in os.walk("data/"+data_name):
             for file in files:
-                if file.endswith('.sm'):
-                    project_file_path = os.path.join(root, file)
-                    try:
-                        project = parse(project_file_path, instance_format="psplib")
-                        # Teraz przekazujemy też samą nazwę pliku, która posłuży jako klucz dla słownika BKS
-                        all_projects.append((project, file))
-                    except Exception as e:
-                        print(f"Error loading {project_file_path}: {e}")
+                if not (file.endswith('.sm') or file.endswith('.rcp')):
+                    continue
+                instance_format = (
+                    "psplib" if file.endswith(".sm")
+                    else "patterson"
+                )
+                project_file_path = os.path.join(root, file)
+                try:
+                    project = parse(project_file_path, instance_format=instance_format)
+                    all_projects.append((project, file))
+                except Exception as e:
+                    print(f"Error loading {project_file_path}: {e}")
         return all_projects
